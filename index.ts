@@ -3,9 +3,13 @@ class MyPromise {
 
   constructor(executor: (resolve: (params: any) => void, reject?: (params: any) => void) => void) {
     executor((params: any) => {
-      this.handleCallbacksQueue(params, false);
+      setTimeout(() => {
+        this.handleCallbacksQueue(params, false);
+      }, 0);
     }, (params: any) => {
-      this.handleCallbacksQueue(params, true);
+      setTimeout(() => {
+        this.handleCallbacksQueue(params, true);
+      }, 0);
     });
   }
 
@@ -62,17 +66,20 @@ main();
 function test(PromiseClass: { new(callback: (...params: any) => any): Promise<any> | MyPromise }, resOrRej: 'res'| 'rej') {
   console.log('test', PromiseClass.name, resOrRej);
 
-  new PromiseClass((res, rej) => {
+  const promise = new PromiseClass((res, rej) => {
     console.log('promise constructor');
+    res('timeout');
   
     setTimeout(() => {
       if (resOrRej === 'res') {
-        res('timeout');
+        // res('timeout');
       } else {
         rej('timeout')
       }
     }, 1000);
   })
+
+  promise
   .then(val => {
     console.log('then 1, prev', val);
     return 'then 1'
